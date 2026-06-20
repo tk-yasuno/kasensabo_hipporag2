@@ -1,0 +1,72 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+.venv-hipp/
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Pytest / coverage
+.pytest_cache/
+htmlcov/
+.coverage
+
+# ── Experiment generated files ──────────────────────────────
+experiments/indices/
+experiments/env_config.json
+experiments/testset_200.jsonl
+experiments/results/
+
+# ── Model weights (large binary files) ──────────────────────
+models/
+*.safetensors
+*.bin
+*.gguf
+*.ggml
+
+# ── Data (keep source Markdown, exclude large generated files) ──
+data/rag/embeddings.npy
+data/rag/faiss.index
+data/rag/bm25.pkl
+data/generated_QA/*.npz
+
+# ── LaTeX build artifacts ────────────────────────────────────
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.lof
+*.lot
+
+# ── OS / editor ──────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+*.lnk
+.vscode/
+.idea/
+
+# ── Backup files ─────────────────────────────────────────────
+0_LogBAK/
+
+# methodology
+paper_kasensabo_hippo2\
+

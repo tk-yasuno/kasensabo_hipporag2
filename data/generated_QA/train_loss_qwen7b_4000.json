@@ -1,0 +1,87 @@
+{
+  "subset": 4000,
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "epochs": 3,
+  "lora_r": 32,
+  "lora_alpha": 16,
+  "dropout": 0.05,
+  "elapsed_min": 141.7,
+  "history": [
+    {
+      "step": 100,
+      "epoch": 0.2,
+      "loss": 1.8449
+    },
+    {
+      "step": 200,
+      "epoch": 0.4,
+      "loss": 1.3669
+    },
+    {
+      "step": 300,
+      "epoch": 0.6,
+      "loss": 1.3018
+    },
+    {
+      "step": 400,
+      "epoch": 0.8,
+      "loss": 1.2853
+    },
+    {
+      "step": 500,
+      "epoch": 1.0,
+      "loss": 1.2426
+    },
+    {
+      "step": 600,
+      "epoch": 1.2,
+      "loss": 1.1336
+    },
+    {
+      "step": 700,
+      "epoch": 1.4,
+      "loss": 1.115
+    },
+    {
+      "step": 800,
+      "epoch": 1.6,
+      "loss": 1.1048
+    },
+    {
+      "step": 900,
+      "epoch": 1.8,
+      "loss": 1.1095
+    },
+    {
+      "step": 1000,
+      "epoch": 2.0,
+      "loss": 1.101
+    },
+    {
+      "step": 1100,
+      "epoch": 2.2,
+      "loss": 0.9654
+    },
+    {
+      "step": 1200,
+      "epoch": 2.4,
+      "loss": 0.967
+    },
+    {
+      "step": 1300,
+      "epoch": 2.6,
+      "loss": 0.9383
+    },
+    {
+      "step": 1400,
+      "epoch": 2.8,
+      "loss": 0.9471
+    },
+    {
+      "step": 1500,
+      "epoch": 3.0,
+      "loss": 0.9525
+    }
+  ],
+  "final_loss": 0.9525
+}

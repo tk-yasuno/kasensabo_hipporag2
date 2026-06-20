@@ -1,0 +1,670 @@
+%% ============================================================
+%% methodology.bib — References for Methodology section
+%% Fine-Tuning VLMs for Bridge Damage and Repair Priority
+%% ============================================================
+
+%% ---------- Bridge Inspection Regulation ----------
+@techreport{mlit2023bridge,
+  title        = {Periodic Inspection Guidelines for Road Bridges (Doro-kyo Teiki Tenken Yoryo)},
+  author       = {{Ministry of Land, Infrastructure, Transport and Tourism (MLIT), Japan}},
+  institution  = {MLIT},
+  year         = {2023},
+  note         = {Available: \url{https://www.mlit.go.jp/road/sisaku/yobohozen/yobohozen.html}}
+}
+
+%% ---------- Vision-Language Models ----------
+@inproceedings{liu2024llava,
+  title     = {Visual Instruction Tuning},
+  author    = {Liu, Haotian and Li, Chunyuan and Wu, Qingyang and Lee, Yong Jae},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {36},
+  year      = {2023},
+  url       = {https://llava-vl.github.io/}
+}
+
+@article{liu2024llavanext,
+  title   = {{LLaVA-NeXT}: Improved Reasoning, OCR, and World Knowledge},
+  author  = {Liu, Haotian and Li, Chunyuan and Li, Yuheng and Lee, Yong Jae},
+  journal = {Technical Blog},
+  year    = {2024},
+  url     = {https://llava-vl.github.io/blog/2024-01-30-llava-next/}
+}
+
+@inproceedings{radford2021clip,
+  title     = {Learning Transferable Visual Models From Natural Language Supervision},
+  author    = {Radford, Alec and Kim, Jong Wook and Hallacy, Chris and Ramesh, Aditya
+               and Goh, Gabriel and Agarwal, Sandhini and Sastry, Girish and
+               Askell, Amanda and Mishkin, Pamela and Clark, Jack and others},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  year      = {2021}
+}
+
+%% ---------- QLoRA and Quantization ----------
+@article{dettmers2023qlora,
+  title   = {{QLoRA}: Efficient Finetuning of Quantized {LLMs}},
+  author  = {Dettmers, Tim and Pagnoni, Artidoro and Holtzman, Ari and Zettlemoyer, Luke},
+  journal = {arXiv preprint arXiv:2305.14314},
+  year    = {2023}
+}
+
+@article{dettmers2022llmint8,
+  title   = {{LLM.int8()}: 8-bit Matrix Multiplication for Transformers at Scale},
+  author  = {Dettmers, Tim and Lewis, Mike and Belkada, Younes and Zettlemoyer, Luke},
+  journal = {arXiv preprint arXiv:2208.07339},
+  year    = {2022}
+}
+
+@inproceedings{hu2022lora,
+  title     = {{LoRA}: Low-Rank Adaptation of Large Language Models},
+  author    = {Hu, Edward J. and Shen, Yelong and Wallis, Phillip and Allen-Zhu, Zeyuan
+               and Li, Yuanzhi and Wang, Shean and Wang, Lu and Chen, Weizhu},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2022}
+}
+
+@inproceedings{liu2024dora,
+  title     = {{DoRA}: Weight-Decomposed Low-Rank Adaptation},
+  author    = {Liu, Shih-Yang and Wang, Chien-Yi and Yin, Hongxu and Molchanov, Pavlo
+               and Wang, Yu-Chiang Frank and Cheng, Kwang-Ting and Hsieh, Min-Hsiu},
+  booktitle = {Proceedings of the International Conference on Machine Learning (ICML)},
+  year      = {2024},
+  note      = {arXiv:2402.09353}
+}
+
+@inproceedings{frantar2022gptq,
+  title     = {{GPTQ}: Accurate Post-Training Quantization for Generative Pre-trained Transformers},
+  author    = {Frantar, Elias and Ashkboos, Saleh and Hoefler, Torsten and Alistarh, Dan},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2023}
+}
+
+%% ---------- Sentence-BERT ----------
+@inproceedings{reimers2019sentencebert,
+  title     = {Sentence-{BERT}: Sentence Embeddings using Siamese {BERT}-Networks},
+  author    = {Reimers, Nils and Gurevych, Iryna},
+  booktitle = {Proceedings of the 2019 Conference on Empirical Methods in
+               Natural Language Processing (EMNLP)},
+  year      = {2019}
+}
+
+@misc{sonoisa2021sbert,
+  title        = {Japanese Sentence-{BERT}: \texttt{sentence-bert-base-ja-mean-tokens-v2}},
+  author       = {Sonoisa},
+  year         = {2021},
+  howpublished = {Hugging Face Model Hub},
+  url          = {https://huggingface.co/sonoisa/sentence-bert-base-ja-mean-tokens-v2}
+}
+
+%% ---------- PyTorch and Tooling ----------
+@misc{pytorch2023compile,
+  title        = {{torch.compile}: {PyTorch} 2.0 Compilation},
+  author       = {{PyTorch Team}},
+  year         = {2023},
+  howpublished = {PyTorch Documentation},
+  url          = {https://pytorch.org/docs/stable/generated/torch.compile.html}
+}
+
+@article{paszke2019pytorch,
+  title   = {{PyTorch}: An Imperative Style, High-Performance Deep Learning Library},
+  author  = {Paszke, Adam and Gross, Sam and Massa, Francisco and Lerer, Adam
+             and Bradbury, James and Chanan, Gregory and Killeen, Trevor and
+             Lin, Zeming and Gimelshein, Natalia and Antiga, Luca and others},
+  journal = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume  = {32},
+  year    = {2019}
+}
+
+@misc{huggingface2023peft,
+  title        = {{PEFT}: State-of-the-art Parameter-Efficient Fine-Tuning},
+  author       = {{Hugging Face}},
+  year         = {2023},
+  howpublished = {\url{https://github.com/huggingface/peft}}
+}
+
+@misc{wolf2020transformers,
+  title        = {{HuggingFace Transformers}: State-of-the-art {NLP}},
+  author       = {Wolf, Thomas and Debut, Lysandre and Sanh, Victor and Chaumond, Julien
+                  and Delangue, Clement and Moi, Anthony and Cistac, Pierric and Rault, Tim
+                  and Louf, Remi and Funtowicz, Morgan and others},
+  booktitle    = {Proceedings of EMNLP 2020: System Demonstrations},
+  year         = {2020},
+  url          = {https://arxiv.org/abs/1910.03771}
+}
+
+%% ---------- Infrastructure Inspection ----------
+@article{dorafshan2018concrete,
+  title   = {Comparison of deep convolutional neural networks and edge detectors for
+             image-based crack detection in concrete},
+  author  = {Dorafshan, Sattar and Thomas, Robert J. and Maguire, Marc},
+  journal = {Construction and Building Materials},
+  volume  = {186},
+  pages   = {1031--1045},
+  year    = {2018}
+}
+
+@article{hsieh2020concrete,
+  title   = {Machine learning for crack detection: Review and model performance comparison},
+  author  = {Hsieh, Yi-An and Tsai, Yichang},
+  journal = {Journal of Computing in Civil Engineering},
+  volume  = {34},
+  number  = {5},
+  year    = {2020}
+}
+
+%% ---------- Existing Author Work ----------
+@misc{yasuno2024github,
+  title        = {damage\_vlm\_finetune: Fine-tuning Vision-Language Models for Bridge
+                  Damage Assessment},
+  author       = {Yasuno, Takato},
+  year         = {2024},
+  howpublished = {\url{https://github.com/tk-yasuno/damage_vlm_finetune}}
+}
+
+%% ---------- Author's Prior Peer Work (arXiv 2023-2026) ----------
+@article{yasuno2023fewshot,
+  title   = {Few-shot $1/a$ Anomalies Feedback: Damage Vision Mining Opportunity
+             and Embedding Feature Imbalance},
+  author  = {Yasuno, Takato},
+  journal = {arXiv preprint arXiv:2307.12676},
+  year    = {2023}
+}
+
+@article{yasuno2026quantized,
+  title   = {Quantized Vision-Language Models for Damage Assessment:
+             A Comparative Study of {LLaVA-1.5-7B} Quantization Levels},
+  author  = {Yasuno, Takato},
+  journal = {arXiv preprint arXiv:2603.26770},
+  year    = {2026}
+}
+
+@article{yasuno2026multistage,
+  title   = {Multi-stage Bridge Inspection System: Integrating Foundation
+             Models with Location Anonymization},
+  author  = {Yasuno, Takato},
+  journal = {arXiv preprint arXiv:2601.17254},
+  year    = {2026}
+}
+
+@article{yasuno2026japanese,
+  title   = {Adapting Methods for Domain-Specific Japanese Small {LMs}:
+             Scale, Architecture, and Quantization},
+  author  = {Yasuno, Takato},
+  journal = {arXiv preprint arXiv:2603.18037},
+  year    = {2026}
+}
+
+@article{yasuno2026graph,
+  title   = {Heterogeneous Graph Importance Scoring and Clustering with
+             Automated {LLM}-based Interpretation},
+  author  = {Yasuno, Takato},
+  journal = {arXiv preprint arXiv:2605.02919},
+  year    = {2026}
+}
+
+%% ---------- Additional VLMs ----------
+@article{dai2023instructblip,
+  title   = {{InstructBLIP}: Towards General-purpose Vision-Language Models
+             with Instruction Tuning},
+  author  = {Dai, Wenliang and Li, Junnan and Li, Dongxu and Tiong, Anthony Meng Huat
+             and Zhao, Junqi and Wang, Weisheng and Li, Boyang and Fung, Pascale
+             and Hoi, Steven},
+  journal = {arXiv preprint arXiv:2305.06500},
+  year    = {2023}
+}
+
+@inproceedings{li2023blip2,
+  title     = {{BLIP-2}: Bootstrapping Language-Image Pre-training with Frozen
+               Image Encoders and Large Language Models},
+  author    = {Li, Junnan and Li, Dongxu and Savarese, Silvio and Hoi, Steven},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  year      = {2023}
+}
+
+@inproceedings{alayrac2022flamingo,
+  title     = {Flamingo: a Visual Language Model for Few-Shot Learning},
+  author    = {Alayrac, Jean-Baptiste and Donahue, Jeff and Luc, Pauline and Miech, Antoine
+               and Barr, Iain and Hasson, Yana and Lenc, Karel and Mensch, Arthur
+               and Millican, Katie and Reynolds, Malcolm and others},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {35},
+  year      = {2022}
+}
+
+@techreport{openai2023gpt4,
+  title       = {{GPT-4} Technical Report},
+  author      = {{OpenAI}},
+  institution = {OpenAI},
+  year        = {2023},
+  url         = {https://arxiv.org/abs/2303.08774}
+}
+
+%% ---------- Civil Infrastructure Inspection ----------
+@article{cha2017deepcrack,
+  title   = {Deep Learning-Based Crack Damage Detection Using Convolutional
+             Neural Networks},
+  author  = {Cha, Young-Jin and Choi, Wooram and B{\"u}y{\"u}k{\"o}zt{\"u}rk, Oral},
+  journal = {Computer-Aided Civil and Infrastructure Engineering},
+  volume  = {32},
+  number  = {5},
+  pages   = {361--378},
+  year    = {2017}
+}
+
+@article{spencer2019vision,
+  title   = {Advances in Computer Vision-Based Civil Infrastructure Inspection
+             and Monitoring},
+  author  = {Spencer, Billie F. and Hoskere, Vedhus and Narazaki, Yasutaka},
+  journal = {Engineering},
+  volume  = {5},
+  number  = {2},
+  pages   = {199--222},
+  year    = {2019}
+}
+
+@article{yang2018dam,
+  title   = {Automatic Pixel-Level Crack Detection on Dam Surface Using Deep
+             Convolutional Network},
+  author  = {Yang, Liyuan and Li, Boyuan and Li, Wei and Liu, Zhenduo
+             and Yang, Guoyong and Xiao, Jizhong},
+  journal = {Sensors},
+  volume  = {18},
+  number  = {7},
+  pages   = {2090},
+  year    = {2018}
+}
+
+%% ---------- Infrastructure Life-cycle Management ----------
+@article{frangopol2011lifecycle,
+  title   = {Life-cycle performance, management, and optimisation of structural
+             systems under uncertainty: accomplishments and challenges},
+  author  = {Frangopol, Dan M.},
+  journal = {Structure and Infrastructure Engineering},
+  volume  = {7},
+  number  = {6},
+  pages   = {389--413},
+  year    = {2011}
+}
+
+%% ---------- Recent VLMs (CVPR / ICLR / ICCV 2023-2024) ----------
+@inproceedings{liu2024llava15,
+  title     = {Improved Baselines with Visual Instruction Tuning},
+  author    = {Liu, Haotian and Li, Chunyuan and Li, Yuheng and Lee, Yong Jae},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision
+               and Pattern Recognition (CVPR)},
+  year      = {2024},
+  note      = {Highlight paper}
+}
+
+@inproceedings{zhu2024minigpt4,
+  title     = {{MiniGPT-4}: Enhancing Vision-Language Understanding with
+               Advanced Large Language Models},
+  author    = {Zhu, Deyao and Chen, Jun and Shen, Xiaoqian and Li, Xiang
+               and Elhoseiny, Mohamed},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2024}
+}
+
+@inproceedings{kirillov2023sam,
+  title     = {Segment Anything},
+  author    = {Kirillov, Alexander and Mintun, Eric and Ravi, Nikhila and Mao, Hanzi
+               and Rolland, Chloe and Gustafson, Laura and Xiao, Tete and
+               Whitehead, Spencer and Berg, Alexander C. and Lo, Wan-Yen and
+               Doll{\'a}r, Piotr and Girshick, Ross},
+  booktitle = {International Conference on Computer Vision (ICCV)},
+  year      = {2023}
+}
+
+@article{liu2023groundingdino,
+  title   = {Grounding {DINO}: Marrying {DINO} with Grounded Pre-Training
+             for Open-Set Object Detection},
+  author  = {Liu, Shilong and Zeng, Zhaoyang and Ren, Tianhe and Li, Feng
+             and Zhang, Hao and Yang, Jie and Jiang, Qing and Li, Chunyuan
+             and Yang, Jianwei and Su, Hang and Zhu, Jun and Zhang, Lei},
+  journal = {arXiv preprint arXiv:2303.05499},
+  year    = {2023}
+}
+
+%% ---------- VLM-based Zero-shot / Industrial Anomaly Detection ----------
+@inproceedings{jeong2023winclip,
+  title     = {{WinCLIP}: Zero-/Few-Shot Anomaly Classification and Segmentation},
+  author    = {Jeong, Jongheon and Zou, Yang and Kim, Taewan and Zhang, Dongqing
+               and Ravichandran, Avinash and Dabeer, Onkar},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision
+               and Pattern Recognition (CVPR)},
+  year      = {2023}
+}
+
+@inproceedings{zhou2024anomalyclip,
+  title     = {{AnomalyCLIP}: Object-agnostic Prompt Learning for Zero-shot
+               Anomaly Detection},
+  author    = {Zhou, Qihang and Pang, Guansong and Tian, Yu and He, Shibo
+               and Chen, Jiming},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2024}
+}
+
+@inproceedings{gu2024anomalygpt,
+  title     = {{AnomalyGPT}: Detecting Industrial Anomalies Using Large
+               Vision-Language Models},
+  author    = {Gu, Zhaopeng and Zhu, Bingke and Zhu, Guibo and Chen, Yingying
+               and Tang, Ming and Wang, Jinqiao},
+  booktitle = {Proceedings of the AAAI Conference on Artificial Intelligence
+               (AAAI)},
+  year      = {2024}
+}
+
+@article{cao2023gpt4vanomaly,
+  title   = {Towards Generic Anomaly Detection and Understanding: Large-scale
+             Visual-linguistic Model ({GPT-4V}) Takes the Lead},
+  author  = {Cao, Yunkang and Xu, Xiaohao and Sun, Chen and Huang, Xiaonan
+             and Shen, Weiming},
+  journal = {arXiv preprint arXiv:2311.02782},
+  year    = {2023}
+}
+
+%% ---------- CVPR 2025 / AAAI 2025 Anomaly Detection ----------
+@inproceedings{xu2025anomalyov,
+  title     = {Towards Zero-Shot Anomaly Detection and Reasoning with
+               Multimodal Large Language Models},
+  author    = {Xu, Jiacong and Lo, Shao-Yuan and Safaei, Bardia and
+               Patel, Vishal M. and Dwivedi, Isht},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision
+               and Pattern Recognition (CVPR)},
+  year      = {2025}
+}
+
+@inproceedings{zhang2025trainingfree,
+  title     = {Towards Training-free Anomaly Detection with Vision and
+               Language Foundation Models},
+  author    = {Zhang, Jinjin and Wang, Guodong and Jin, Yizhou and Huang, Di},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision
+               and Pattern Recognition (CVPR)},
+  year      = {2025}
+}
+
+@inproceedings{jin2025logicad,
+  title     = {{LogicAD}: Explainable Anomaly Detection via {VLM}-based
+               Text Feature Extraction},
+  author    = {Jin, Er and Feng, Qihui and Mou, Yongli and Decker, Stefan
+               and Lakemeyer, Gerhard and Simons, Oliver and
+               Stegmaier, Johannes},
+  booktitle = {Proceedings of the AAAI Conference on Artificial Intelligence
+               (AAAI)},
+  year      = {2025}
+}
+
+%% ---------- ISARC: Automation and Robotics in Construction ----------
+
+@inproceedings{omar2023bridge,
+  author    = {Omar, Abdelhady and Moselhi, Osama},
+  title     = {An Integrated Approach for Automated Acquisition of Bridge
+               Data and Deficiency Evaluation},
+  booktitle = {Proceedings of the 40th International Symposium on
+               Automation and Robotics in Construction ({ISARC})},
+  pages     = {341--348},
+  year      = {2023},
+  address   = {Chennai, India},
+  doi       = {10.22260/ISARC2023/0047}
+}
+
+@inproceedings{pu2024mllm,
+  author    = {Pu, Hongxu and Yang, Xincong and Shi, Zhongqi and Jin, Nan},
+  title     = {Automated Inspection Report Generation Using Multimodal
+               Large Language Models and Set-of-Mark Prompting},
+  booktitle = {Proceedings of the 41st International Symposium on
+               Automation and Robotics in Construction ({ISARC})},
+  pages     = {1003--1009},
+  year      = {2024},
+  address   = {Lille, France},
+  doi       = {10.22260/ISARC2024/0130}
+}
+
+@inproceedings{hsu2024vlcon,
+  author    = {Hsu, Shun-Hsiang and Fu, Junryu and Golparvar-Fard, Mani},
+  title     = {{VL-Con}: Vision-Language Dataset for Deep Learning-Based
+               Construction Monitoring Applications},
+  booktitle = {Proceedings of the 41st International Symposium on
+               Automation and Robotics in Construction ({ISARC})},
+  pages     = {1128--1135},
+  year      = {2024},
+  address   = {Lille, France},
+  doi       = {10.22260/ISARC2024/0146}
+}
+
+@inproceedings{nunez2024bridge,
+  author    = {N\'{u}\~{n}ez Varillas, Christopher Joseph and
+               Regalado Espinoza, Marck Steewar and
+               Huaypar Acurio, Luis Mario and
+               Bedon Rosario, Antonio Stefano and
+               Roman\'{i} Chavez, Jordan Antony and
+               Solis Garcia, Oscar Manuel and
+               Agreda Estela, Karol Maricruz and
+               Cardenas Contreras, Micaela Anthoaneth},
+  title     = {{3D} Reconstruction of a Bridge with Concrete Damage
+               Classification Using Deep Learning},
+  booktitle = {Proceedings of the 41st International Symposium on
+               Automation and Robotics in Construction ({ISARC})},
+  pages     = {722--729},
+  year      = {2024},
+  address   = {Lille, France},
+  doi       = {10.22260/ISARC2024/0094}
+}
+
+@inproceedings{alsharqawi2025mrr,
+  author    = {Alsharqawi, Mohammed and Abu Dabous, Saleh and Zayed, Tarek},
+  title     = {Automated Decision-Making Tool for Optimal Long-Term
+               Scheduling of {MRR} Strategies: A Case Study on Bridges},
+  booktitle = {Proceedings of the 42nd International Symposium on
+               Automation and Robotics in Construction ({ISARC})},
+  pages     = {272--279},
+  year      = {2025},
+  address   = {Montreal, Canada},
+  doi       = {10.22260/ISARC2025/0037}
+}
+
+@inproceedings{mengiste2025progress,
+  author    = {Mengiste, Eyob and Sonkor, Muammer Semih and Zheng, Zihao and
+               Prieto Ayll\'{o}n, Samuel A. and
+               Garc\'{i}a de Soto, Borja},
+  title     = {Automating Weekly Construction Activity Progress Reporting:
+               Leveraging {AI}-Driven Workflows},
+  booktitle = {Proceedings of the 42nd International Symposium on
+               Automation and Robotics in Construction ({ISARC})},
+  pages     = {641--648},
+  year      = {2025},
+  address   = {Montreal, Canada},
+  doi       = {10.22260/ISARC2025/0084}
+}
+
+@inproceedings{zuo2025transformer,
+  author    = {Zuo, Hui and Sun, Tao and Xie, Hao and Ma, Xiao and
+               Shirzad-Ghaleroudkhani, Nima and Mei, Qipei},
+  title     = {Transformer-Based Multi-Resolution Fast {3D} Reconstruction
+               for Structural Damage Detection},
+  booktitle = {Proceedings of the 42nd International Symposium on
+               Automation and Robotics in Construction ({ISARC})},
+  pages     = {988--995},
+  year      = {2025},
+  address   = {Montreal, Canada},
+  doi       = {10.22260/ISARC2025/0128}
+}
+
+@inproceedings{assad2025crack,
+  author    = {Assad, Ahmed and Bo Arki, Mohamad and Sweid, Miray and
+               Hammad, Amin},
+  title     = {Crack Detection and Segmentation for Bridges Using
+               State-of-the-Art Deep Learning Methods: Single-Stage
+               vs.\ Two-Stage Detectors},
+  booktitle = {Proceedings of the 42nd International Symposium on
+               Automation and Robotics in Construction ({ISARC})},
+  pages     = {996--1003},
+  year      = {2025},
+  address   = {Montreal, Canada},
+  doi       = {10.22260/ISARC2025/0129}
+}
+
+@inproceedings{reja2025llm,
+  author    = {Reja, Varun Kumar and Mok, Ching Yau and Pal, Aritra and
+               Brilakis, Ioannis},
+  title     = {Comparing Few-Shot Learning with {LLMs} for Efficient Text
+               Classification in Road Maintenance Applications},
+  booktitle = {Proceedings of the 42nd International Symposium on
+               Automation and Robotics in Construction ({ISARC})},
+  pages     = {1017--1024},
+  year      = {2025},
+  address   = {Montreal, Canada},
+  doi       = {10.22260/ISARC2025/0132}
+}
+
+@inproceedings{omar2025bridge,
+  author    = {Omar, Abdelhady and Moselhi, Osama},
+  title     = {Improved Information Extraction from Bridge Inspection
+               Reports Using Fine-Tuned Generative Pre-Trained Transformers},
+  booktitle = {Proceedings of the 42nd International Symposium on
+               Automation and Robotics in Construction ({ISARC})},
+  pages     = {1551--1558},
+  year      = {2025},
+  address   = {Montreal, Canada},
+  doi       = {10.22260/ISARC2025/0202}
+}
+
+%% ---------- AI Agent and Quality Guardrail (v0.6 additions) ----------
+
+@article{bai2022constitutional,
+  title   = {Constitutional {AI}: Harmlessness from {AI} Feedback},
+  author  = {Bai, Yuntao and Jones, Andy and Ndousse, Kamal and
+             Askell, Amanda and Chen, Anna and DasSarma, Nova and
+             Drain, Dawn and Fort, Stanislav and Ganguli, Deep and
+             Henighan, Tom and others},
+  journal = {arXiv preprint arXiv:2212.08073},
+  year    = {2022}
+}
+
+@inproceedings{zheng2023judge,
+  title     = {Judging {LLM-as-a-Judge} with {MT-Bench} and Chatbot Arena},
+  author    = {Zheng, Lianmin and Chiang, Wei-Lin and Sheng, Ying and
+               Zhuang, Siyuan and Wu, Zhanghao and Zhuang, Yonghao and
+               Lin, Zi and Li, Zhuohan and Li, Dacheng and Xing, Eric
+               and others},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {36},
+  year      = {2023}
+}
+
+@article{liu2023geval,
+  title   = {{G-Eval}: {NLG} Evaluation Using {GPT-4} with Better
+             Human Alignment},
+  author  = {Liu, Yang and Iter, Dan and Xu, Yichong and Wang, Shuohang
+             and Xu, Ruochen and Zhu, Chenguang},
+  journal = {arXiv preprint arXiv:2303.16634},
+  year    = {2023}
+}
+
+@inproceedings{rebedea2023nemo,
+  title     = {{NeMo Guardrails}: A Toolkit for Controllable and Safe {LLM}
+               Applications with Programmable Rails},
+  author    = {Rebedea, Traian and Dinu, Razvan and Sreedhar, Makesh Narsimhan
+               and Parisien, Christopher and Cohen, Jonathan},
+  booktitle = {Proceedings of the 2023 Conference on Empirical Methods in
+               Natural Language Processing (EMNLP): System Demonstrations},
+  year      = {2023}
+}
+
+@article{asai2023selfrag,
+  title   = {Self-{RAG}: Learning to Retrieve, Generate, and Critique
+             through Self-Reflection},
+  author  = {Asai, Akari and Wu, Zeqiu and Wang, Yizhong and Sil, Avirup
+             and Hajishirzi, Hannaneh},
+  journal = {arXiv preprint arXiv:2310.11511},
+  year    = {2023}
+}
+
+@article{shinn2023reflexion,
+  title   = {Reflexion: Language Agents with Verbal Reinforcement Learning},
+  author  = {Shinn, Noah and Cassano, Federico and Gopinath, Ashwin and
+             Narasimhan, Karthik and Yao, Shunyu},
+  journal = {arXiv preprint arXiv:2303.11366},
+  year    = {2023}
+}
+
+@article{dhuliawala2023chainveri,
+  title   = {Chain-of-Verification Reduces Hallucination in Large Language Models},
+  author  = {Dhuliawala, Shehzaad and Komeili, Mojtaba and Xu, Jing and
+             Raileanu, Roberta and Li, Xian and Celikyilmaz, Asli and
+             Weston, Jason},
+  journal = {arXiv preprint arXiv:2309.11495},
+  year    = {2023}
+}
+
+@inproceedings{min2023factscore,
+  title     = {{FActScore}: Fine-Grained Atomic Evaluation of Factual Precision
+               in Long Form Text Generation},
+  author    = {Min, Sewon and Krishna, Kalpesh and Lyu, Xinxi and Lewis, Mike
+               and Yih, Wen-tau and Koh, Pang Wei and Iyyer, Mohit and
+               Zettlemoyer, Luke and Hajishirzi, Hannaneh},
+  booktitle = {Proceedings of the 2023 Conference on Empirical Methods in
+               Natural Language Processing (EMNLP)},
+  year      = {2023}
+}
+
+@article{yao2023react,
+  title   = {{ReAct}: Synergizing Reasoning and Acting in Language Models},
+  author  = {Yao, Shunyu and Zhao, Jeffrey and Yu, Dian and Du, Nan and
+             Shafran, Izhak and Narasimhan, Karthik and Cao, Yuan},
+  journal = {arXiv preprint arXiv:2210.03629},
+  year    = {2023}
+}
+
+@article{shen2023alignment,
+  title   = {Large Language Model Alignment: A Survey},
+  author  = {Shen, Tianhao and Jin, Renren and Huang, Yufei and Liu, Chuang
+             and Dong, Weilong and Guo, Zishan and Wu, Xinwei and Liu, Yan
+             and Xiong, Deyi},
+  journal = {arXiv preprint arXiv:2309.15025},
+  year    = {2023}
+}
+
+@misc{tokyotech2024swallow,
+  title        = {{Llama-3-Swallow-8B-Instruct-v0.1}: A Japanese-Enhanced
+                 Instruction-Tuned Large Language Model},
+  author       = {{Tokyo Institute of Technology LLM Research Group}},
+  year         = {2024},
+  howpublished = {Hugging Face Model Hub},
+  url          = {https://huggingface.co/tokyotech-llm/Llama-3-Swallow-8B-Instruct-v0.1}
+}
+
+@misc{han2023unsloth,
+  title        = {Unsloth: Efficient Fine-tuning for Large Language Models},
+  author       = {Han, Daniel and Han, Michael},
+  year         = {2023},
+  howpublished = {\url{https://github.com/unslothai/unsloth}},
+  note         = {GitHub repository}
+}
+
+@book{berryman2024prompt,
+  title     = {Prompt Engineering for LLMs: The Art and Science of Building Large Language Model--Based Applications},
+  author    = {Berryman, John and Ziegler, Albert},
+  year      = {2024},
+  publisher = {O'Reilly Media}
+}
+
+@book{biswas2025agentic,
+  title     = {Building Agentic AI Systems: Designing, Implementing, and Scaling Autonomous AI Agents},
+  author    = {Biswas, Anjanava and Talukdar, Wrick},
+  year      = {2025},
+  publisher = {Packt Publishing}
+}
+
+@book{huyen2024aiengineering,
+  title     = {AI Engineering: Building Applications with Foundation Models},
+  author    = {Huyen, Chip},
+  year      = {2024},
+  publisher = {O'Reilly Media}
+}
+
+@book{albada2025aiagents,
+  title     = {Building Applications with AI Agents: Designing and Deploying Autonomous, Goal-Oriented AI Systems},
+  author    = {Albada, Michael},
+  year      = {2025},
+  publisher = {O'Reilly Media}
+}
