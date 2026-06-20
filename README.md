@@ -18,6 +18,33 @@ A reproducible benchmark comparing three RAG retrieval strategies on Japanese ci
 
 ---
 
+## Release Notes
+
+### v0.1 (2026-06-21)
+
+Initial release featuring:
+
+- **Complete RAG benchmark pipeline** for Japanese technical documents
+- **Three retrieval strategies**: Naive RAG, Light RAG, and HippoRAG2 (hierarchical coarse-to-fine)
+- **Automated evaluation framework** with AI-as-Judge scoring (Qwen2.5-7B)
+- **Experiment scripts**:
+  - `04c_run_all.py`: Batch evaluation runner with configurable batch sizes
+  - `04d_judge_only.py`: Re-run scoring without re-generating answers
+  - Test scripts for Qwen GPU performance validation
+- **Unsloth integration**: Compiled cache for various trainers (SFT, DPO, ORPO, etc.)
+- **PowerShell automation**: `04b_run_all.ps1` for sequential condition execution
+- **Configuration management**: `env_config.json` for Ollama model resolution
+- **Comprehensive documentation**: Setup guides, lessons learned, and technical notes
+
+**Key capabilities**:
+- Supports 16 GB VRAM GPU constraint with model swapping
+- Japanese text processing with custom tokenization
+- Reproducible test set generation (seed-based sampling)
+- Detailed per-question and aggregate metrics
+- Visualization tools for score distribution and latency analysis
+
+---
+
 ## RAG Strategies
 
 ### Naive RAG
