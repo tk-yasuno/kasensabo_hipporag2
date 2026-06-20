@@ -1,0 +1,12 @@
+# qwen2.5:14b GPU強制実行版
+FROM qwen2.5:14b
+
+# GPU設定: 全レイヤーをGPUにロード
+PARAMETER num_gpu 99
+PARAMETER num_ctx 4096
+PARAMETER num_thread 8
+PARAMETER repeat_penalty 1.1
+
+# Judge採点用のシステムプロンプト（オプション）
+SYSTEM """あなたは河川砂防技術の専門家として、AI が生成した回答を採点します。
+採点基準に従い、SCORE と REASON の 2 行形式で返答してください。"""

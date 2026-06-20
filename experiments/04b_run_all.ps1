@@ -17,8 +17,9 @@ Usage:
 
 param(
     [switch]$DryRun,
-    [string]$Models  = "swallow,elyza",
-    [string]$RagList = "naive,light,hipporag2"
+    [string]$Models    = "swallow,elyza",
+    [string]$RagList   = "naive,light,hipporag2",
+    [int]   $BatchSize = 8
 )
 
 $modelList = $Models  -split ","
@@ -48,7 +49,8 @@ foreach ($model in $modelList) {
         $args_list = @(
             "experiments/04_eval_rag.py",
             "--model", $model,
-            "--rag",   $rag
+            "--rag",   $rag,
+            "--batch-size", $BatchSize
         )
         if ($dryFlag) { $args_list += $dryFlag }
 
@@ -61,7 +63,7 @@ foreach ($model in $modelList) {
             Write-Host "  [FAILED] $cond  (exit=$exit_code)"
             $failed += $cond
         } else {
-            Write-Host "  [OK] $cond  (${elapsed}s)"
+            Write-Host "  [OK] $cond  ($elapsed s)"
         }
     }
 }
@@ -69,8 +71,9 @@ foreach ($model in $modelList) {
 $total_elapsed = [math]::Round(((Get-Date) - $start).TotalMinutes, 1)
 Write-Host ""
 Write-Host "=" * 60
-Write-Host "  完了: $total 条件  失敗: $($failed.Count)  総時間: ${total_elapsed} 分"
+$summary = "  Done: {0} conditions  Failed: {1}  Time: {2}min" -f $total, $failed.Count, $total_elapsed
+Write-Host $summary
 if ($failed) {
-    Write-Host "  失敗条件: $($failed -join ', ')"
+    Write-Host "  Failed: $($failed -join ', ')"
 }
 Write-Host "=" * 60
