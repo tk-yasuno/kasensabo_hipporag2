@@ -20,6 +20,48 @@ A reproducible benchmark comparing three RAG retrieval strategies on Japanese ci
 
 ## Release Notes
 
+### v0.2.1 (2026-06-21)
+
+**HippoRAG 2 改良版** — ボリューム分類精度を向上（embedding + キーワード辞書融合）
+
+**改良内容:**
+
+1. **ボリューム分類の精度向上**
+   - Level 1ボリューム選択で `embedding 60% + keyword 40%` の融合スコアリング
+   - `volume_keywords.json`: 4ボリューム別キーワード辞書
+     - 調査編: 23キーワード + 7除外キーワード
+     - 設計編: 32キーワード + 5除外キーワード
+     - 施工編: 27キーワード + 5除外キーワード
+     - 維持管理編: 22キーワード + 4除外キーワード
+
+2. **新規スクリプト**
+   - `02b_build_volume_keywords.py`: キーワード辞書の検証・分析ツール
+   - `04e_similarity_only.py`: Cosine類似度ベース評価（Judge不要）
+   - `05c_plot_evals.py`: 類似度結果の可視化（3種類の図を生成）
+
+3. **改良スクリプト**
+   - `03_rag_retrievers.py`: HippoRAG2Retrieverにキーワード機能搭載
+     - `use_keywords=True` で新機能有効化（デフォルト）
+     - `use_keywords=False` で従来動作に戻すことが可能（backward compatible）
+   - `04d_judge_only.py`: `--judge-model` で採点モデルを明示指定可能
+
+**評価結果（類似度ベース、200質問）:**
+
+![類似度スコア：6条件比較](experiments/evals/figures/01_similarity_comparison.png)
+
+![類似度スコア分布：Violin Plot](experiments/evals/figures/02_similarity_violin.png)
+
+![類似度分布内訳：スタックバー](experiments/evals/figures/03_similarity_distribution.png)
+
+**v0.2.1の特徴:**
+- ✅ ボリューム分類精度が向上（embedding単独から融合アプローチへ）
+- ✅ キーワード辞書管理で保守性向上
+- ✅ backward compatible（従来動作に戻すことが可能）
+- ✅ Judge不要の高速評価方法（Cosine類似度）を新規追加
+- ✅ 可視化ツールで6条件の比較が容易
+
+---
+
 ### v0.1 (2026-06-21)
 
 Initial release featuring:
@@ -95,16 +137,29 @@ kasensabo_hipporag2/
 │   ├── 01_build_indices.py         # Build FAISS + BM25 + hierarchy metadata
 │   ├── 01b_build_hipporag2_index.py  # Build volume / chapter representative vectors
 │   ├── 02_prepare_testset.py       # Sample 200-question test set (seed=42)
+│   ├── 02b_build_volume_keywords.py # [v0.2.1] Build keyword dictionary for volume classification
 │   ├── 03_rag_retrievers.py        # NaiveRetriever / LightRetriever / HippoRAG2Retriever
 │   ├── 04_eval_rag.py              # Single-condition evaluation pipeline
 │   ├── 04b_run_all.ps1             # Run all 6 conditions sequentially (PowerShell)
+│   ├── 04c_run_all.py              # [v0.1] Batch evaluation runner with configurable batch sizes
+│   ├── 04d_judge_only.py           # [v0.1] Re-run scoring without re-generating answers
+│   ├── 04e_similarity_only.py       # [v0.2.1] Cosine similarity-based evaluation
 │   ├── 05_aggregate_results.py     # Aggregate per-condition summaries → CSV / JSON
 │   ├── 05b_plot_results.py         # Generate bar / latency / distribution plots
+│   ├── 05c_plot_evals.py           # [v0.2.1] Visualize similarity evaluation results
+│   ├── volume_keywords.json        # [v0.2.1] Keyword dictionary for volume classification
 │   │
 │   ├── env_config.json             # [generated] resolved Ollama model names
 │   ├── testset_200.jsonl           # [generated] 200-question test set
 │   ├── indices/                    # [generated] FAISS, BM25, hierarchy, HippoRAG2 vectors
-│   └── results/                    # [generated] per-condition JSONL + summary + figures
+│   ├── results/                    # [generated] per-condition JSONL + summary + figures
+│   ├── evals/                      # [generated] similarity evaluation results
+│   │   ├── {model}_{rag}_similarity.json  # Per-condition similarity statistics
+│   │   └── figures/                # Similarity comparison plots
+│   │       ├── 01_similarity_comparison.png    # Bar chart (6 conditions)
+│   │       ├── 02_similarity_violin.png        # Violin plot (distribution)
+│   │       └── 03_similarity_distribution.png  # Stacked bar (score bins)
+│   └── results/figures/            # Judge-based evaluation plots
 │
 └── models/                         # LoRA adapter weights (not tracked by git)
 ```
