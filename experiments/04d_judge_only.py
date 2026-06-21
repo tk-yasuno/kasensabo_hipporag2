@@ -12,6 +12,7 @@ Usage:
     python experiments/04d_judge_only.py --condition swallow_naive  # 特定条件のみ
     python experiments/04d_judge_only.py --judge-workers 4  # 並列数指定
     python experiments/04d_judge_only.py --force            # 既採点も再採点
+    python experiments/04d_judge_only.py --judge-model qwen2.5:14b  # モデルを明示指定
 """
 
 from __future__ import annotations
@@ -85,7 +86,8 @@ def _ollama_chat(
     max_tokens: int = 512,
     temperature: float = 0.3,
     keep_alive: str = "5m",
-) -> str:
+) -> tuple[str, str]:
+    """Ollama チャットAPI呼び出し。(回答テキスト, 実際に使用されたモデル名)を返す"""
     payload = {
         "model":      model,
         "messages": [
@@ -105,7 +107,10 @@ def _ollama_chat(
     timeout_cfg = httpx.Timeout(connect=15.0, read=timeout, write=15.0, pool=5.0)
     resp = httpx.post(f"{OLLAMA_URL}/api/chat", json=payload, timeout=timeout_cfg)
     resp.raise_for_status()
-    return resp.json().get("message", {}).get("content", "")
+    resp_json = resp.json()
+    content = resp_json.get("message", {}).get("content", "")
+    actual_model = resp_json.get("model", model)
+    return content, actual_model
 
 
 def _parse_judge(text: str) -> tuple[int, str]:
@@ -123,7 +128,7 @@ def _judge_one(idx: int, question: str, answer: str, model: str, is_last: bool) 
         answer=answer or "(空回答)",
     )
     try:
-        judge_text = _ollama_chat(
+        judge_text, _ = _ollama_chat(
             model       = model,
             system      = JUDGE_SYSTEM,
             user        = judge_prompt,
@@ -167,8 +172,8 @@ def _pick_judge_model() -> str:
 # Judge 採点メイン処理
 # ─────────────────────────────────────────────────────────
 
-def judge_one_file(result_file: Path, judge_model: str, workers: int, force: bool):
-    """1つの結果ファイルに対してJudge採点を実行"""
+def judge_one_file(result_file: Path, judge_model: str, workers: int, force: bool) -> str:
+    """1つの結果ファイルに対してJudge採点を実行。実際に使用されたモデル名を返す。"""
     
     # 結果読み込み
     results = []
@@ -185,13 +190,14 @@ def judge_one_file(result_file: Path, judge_model: str, workers: int, force: boo
         targets = [r for r in results if r.get("judge_score", -1) == -1]
         if not targets:
             print(f"  ✓ 全問採点済み（スキップ）")
-            return
+            return judge_model
         print(f"  未採点 {len(targets)}/{len(results)} 問を採点")
     
     # Ollamaウォームアップ
+    actual_model = judge_model
     print(f"  Ollamaモデル {judge_model} をGPUにロード中...")
     try:
-        warmup_text = _ollama_chat(
+        warmup_text, actual_model = _ollama_chat(
             model=judge_model,
             system="test",
             user="こんにちは",
@@ -200,7 +206,7 @@ def judge_one_file(result_file: Path, judge_model: str, workers: int, force: boo
             temperature=0.0,
             keep_alive="30m",
         )
-        print(f"  ✓ Ollamaモデルロード完了")
+        print(f"  ✓ Ollamaモデルロード完了 (実際: {actual_model})")
     except Exception as e:
         print(f"  ⚠ Ollamaモデルロード警告: {e}")
     
@@ -255,7 +261,7 @@ def judge_one_file(result_file: Path, judge_model: str, workers: int, force: boo
         "condition":      condition,
         "model":          model_name,
         "rag":            rag_name,
-        "judge_model":    judge_model,
+        "judge_model":    actual_model,
         "n_questions":    len(results),
         "n_judged":       len(valid),
         "avg_score":      round(avg_score, 3),
@@ -272,6 +278,8 @@ def judge_one_file(result_file: Path, judge_model: str, workers: int, force: boo
         json.dump(summary, f, ensure_ascii=False, indent=2)
     print(f"  ✓ サマリー保存: {summary_file.name}")
     print(f"  📊 平均スコア: {avg_score:.2f}/3  完答率: {summary['perfect_rate']}%")
+    
+    return actual_model
 
 
 # ─────────────────────────────────────────────────────────
@@ -281,11 +289,16 @@ def judge_one_file(result_file: Path, judge_model: str, workers: int, force: boo
 def main():
     parser = argparse.ArgumentParser(description="Judge採点のみ実行")
     parser.add_argument("--condition", default=None, help="特定条件のみ採点 (例: swallow_naive)")
+    parser.add_argument("--judge-model", default=None, help="Judge採点モデルを明示指定 (例: qwen2.5:14b)")
     parser.add_argument("--judge-workers", type=int, default=4, help="Judge並列数")
     parser.add_argument("--force", action="store_true", help="既採点も再採点")
     args = parser.parse_args()
     
-    judge_model = _pick_judge_model()
+    # Judge モデル決定（--judge-model で指定されれば優先）
+    if args.judge_model:
+        judge_model = args.judge_model
+    else:
+        judge_model = _pick_judge_model()
     
     # 対象ファイルを検索
     if args.condition:
@@ -300,20 +313,25 @@ def main():
     
     print("=" * 60)
     print(f"  Judge採点: {len(target_files)} 条件")
-    print(f"  Judge model: {judge_model}")
+    if args.judge_model:
+        print(f"  Judge model (指定): {judge_model}")
+    else:
+        print(f"  Judge model (自動選択): {judge_model}")
     print(f"  Workers: {args.judge_workers}")
     print(f"  再採点: {args.force}")
     print("=" * 60)
     
     start_time = time.time()
     
+    actual_models = []
     for i, result_file in enumerate(target_files, 1):
         print()
         print("-" * 60)
         print(f"  [{i}/{len(target_files)}] {result_file.stem}")
         print("-" * 60)
         try:
-            judge_one_file(result_file, judge_model, args.judge_workers, args.force)
+            actual_model = judge_one_file(result_file, judge_model, args.judge_workers, args.force)
+            actual_models.append(actual_model)
         except Exception as e:
             print(f"  ❌ エラー: {e}")
             import traceback
@@ -323,6 +341,15 @@ def main():
     print()
     print("=" * 60)
     print(f"  ✓ Judge採点完了: {len(target_files)} 条件  ({elapsed} 分)")
+    
+    # 実際に使用されたモデルを表示
+    if actual_models:
+        unique_models = set(actual_models)
+        if len(unique_models) == 1:
+            print(f"  実際に使用されたモデル: {actual_models[0]}")
+        else:
+            print(f"  実際に使用されたモデル: {', '.join(unique_models)}")
+    
     print("=" * 60)
 
 

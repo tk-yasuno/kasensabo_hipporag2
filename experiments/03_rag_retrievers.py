@@ -208,24 +208,72 @@ class LightRetriever(BaseRetriever):
 
 
 # ─────────────────────────────────────────────────────────
-# HippoRAG2Retriever — 3段階 coarse-to-fine 検索
+# HippoRAG2Retriever — 3段階 coarse-to-fine 検索 (v0.2.1: キーワード辞書対応)
 # ─────────────────────────────────────────────────────────
 
 class HippoRAG2Retriever(BaseRetriever):
     """
-    Level 1 (coarse): クエリ → ボリューム代表ベクトル類似度 → 上位 n_vol ボリューム選択
+    Level 1 (coarse): クエリ → ボリューム代表ベクトル + キーワード → 上位 n_vol ボリューム選択
     Level 2 (mid):    選択ボリューム内の章代表ベクトル → 上位 n_chap 章選択
     Level 3 (fine):   選択章のチャンクのみで embedding 検索 → top-k
 
-    KG/グラフ構造は使わず、「階層メタデータ＋ベクトル検索」だけで実装。
+    v0.2.1で改善: ボリューム選択にキーワード辞書を組み込み（embedding + keyword融合）
     """
 
-    def __init__(self, top_k: int = 5, n_vol: int = 2, n_chap: int = 3):
+    def __init__(self, top_k: int = 5, n_vol: int = 2, n_chap: int = 3, use_keywords: bool = True):
         super().__init__(top_k)
         self.n_vol  = n_vol
         self.n_chap = n_chap
+        self.use_keywords = use_keywords
         self._vol_vecs: "np.ndarray | None"  = None
         self._chap_vecs: "np.ndarray | None" = None
+        self._keywords_dict: dict | None = None
+
+    def _load_keywords(self):
+        """キーワード辞書をロード"""
+        if self._keywords_dict is not None:
+            return
+        
+        kw_file = IDX_DIR.parent / "volume_keywords.json"
+        if not kw_file.exists():
+            self._keywords_dict = {}
+            return
+        
+        try:
+            with open(kw_file, encoding="utf-8") as f:
+                self._keywords_dict = json.load(f)
+        except Exception:
+            self._keywords_dict = {}
+
+    def _compute_keyword_scores(self, query: str) -> dict[str, float]:
+        """クエリのキーワード解析でボリュームスコアを計算"""
+        if not self.use_keywords or not self._keywords_dict:
+            return {}
+        
+        query_lower = query.lower()
+        volume_scores = {}
+        
+        for vol_name, vol_info in self._keywords_dict.get("volumes", {}).items():
+            score = 0.0
+            
+            # 主キーワードマッチ
+            for kw in vol_info.get("keywords", []):
+                if kw.lower() in query_lower:
+                    score += 1.0
+            
+            # 除外キーワード（負のスコア）
+            for ex_kw in vol_info.get("exclusion_keywords", []):
+                if ex_kw.lower() in query_lower:
+                    score -= 0.5
+            
+            volume_scores[vol_name] = max(0.0, score)
+        
+        # 正規化
+        max_score = max(volume_scores.values()) if volume_scores else 1.0
+        if max_score > 0:
+            volume_scores = {k: v / max_score for k, v in volume_scores.items()}
+        
+        return volume_scores
 
     def _init(self):
         import numpy as np
@@ -240,6 +288,10 @@ class HippoRAG2Retriever(BaseRetriever):
 
             self._vol_vecs  = np.array([v["vector"] for v in vols],  dtype="float32")
             self._chap_vecs = np.array([c["vector"] for c in chaps], dtype="float32") if chaps else np.zeros((0, 1024), dtype="float32")
+        
+        # キーワード辞書のロード
+        if self.use_keywords and self._keywords_dict is None:
+            self._load_keywords()
 
     def retrieve(self, query: str) -> list[RetrievedChunk]:
         import numpy as np
@@ -247,10 +299,31 @@ class HippoRAG2Retriever(BaseRetriever):
 
         q_vec  = _encode(query)   # (1, dim)
 
-        # ── Level 1: ボリューム選択 ──
+        # ── Level 1: ボリューム選択 (embedding + キーワード融合) ──
         vols   = self._indices["volumes_info"]
         v_sim  = (self._vol_vecs @ q_vec.T).flatten()     # (n_vol_total,)
-        top_v  = np.argsort(-v_sim)[:self.n_vol]
+        
+        # キーワードスコアの取得と融合
+        if self.use_keywords and self._keywords_dict:
+            kw_scores = self._compute_keyword_scores(query)
+            fusion_cfg = self._keywords_dict.get("fusion_strategy", {})
+            emb_weight = fusion_cfg.get("embedding_weight", 0.6)
+            kw_weight = fusion_cfg.get("keyword_weight", 0.4)
+            
+            # ボリューム名とスコアの融合
+            combined_scores = []
+            for i, vol_info in enumerate(vols):
+                vol_name = vol_info["volume"]
+                emb_score = (v_sim[i] + 1.0) / 2.0  # [-1, 1] → [0, 1] に正規化
+                kw_score = kw_scores.get(vol_name, 0.0)
+                combined = emb_weight * emb_score + kw_weight * kw_score
+                combined_scores.append(combined)
+            
+            v_scores = np.array(combined_scores)
+        else:
+            v_scores = v_sim
+        
+        top_v  = np.argsort(-v_scores)[:self.n_vol]
         selected_volumes = [vols[i]["volume"] for i in top_v]
 
         # ── Level 2: 章選択 ──
