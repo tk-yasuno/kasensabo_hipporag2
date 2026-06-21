@@ -22,43 +22,43 @@ A reproducible benchmark comparing three RAG retrieval strategies on Japanese ci
 
 ### v0.2.1 (2026-06-21)
 
-**HippoRAG 2 改良版** — ボリューム分類精度を向上（embedding + キーワード辞書融合）
+**Enhanced HippoRAG 2** — Improved volume classification accuracy (embedding + keyword fusion)
 
-**改良内容:**
+**Improvements:**
 
-1. **ボリューム分類の精度向上**
-   - Level 1ボリューム選択で `embedding 60% + keyword 40%` の融合スコアリング
-   - `volume_keywords.json`: 4ボリューム別キーワード辞書
-     - 調査編: 23キーワード + 7除外キーワード
-     - 設計編: 32キーワード + 5除外キーワード
-     - 施工編: 27キーワード + 5除外キーワード
-     - 維持管理編: 22キーワード + 4除外キーワード
+1. **Volume Classification Accuracy Enhancement**
+   - Level 1 volume selection with `embedding 60% + keyword 40%` fusion scoring
+   - `volume_keywords.json`: 4-volume keyword dictionary
+     - Investigation Volume: 23 keywords + 7 exclusion keywords
+     - Design Volume: 32 keywords + 5 exclusion keywords
+     - Construction Volume: 27 keywords + 5 exclusion keywords
+     - Maintenance Volume: 22 keywords + 4 exclusion keywords
 
-2. **新規スクリプト**
-   - `02b_build_volume_keywords.py`: キーワード辞書の検証・分析ツール
-   - `04e_similarity_only.py`: Cosine類似度ベース評価（Judge不要）
-   - `05c_plot_evals.py`: 類似度結果の可視化（3種類の図を生成）
+2. **New Scripts**
+   - `02b_build_volume_keywords.py`: Keyword dictionary validation and analysis tool
+   - `04e_similarity_only.py`: Cosine similarity-based evaluation (Judge-free)
+   - `05c_plot_evals.py`: Similarity evaluation visualization (3 types of plots)
 
-3. **改良スクリプト**
-   - `03_rag_retrievers.py`: HippoRAG2Retrieverにキーワード機能搭載
-     - `use_keywords=True` で新機能有効化（デフォルト）
-     - `use_keywords=False` で従来動作に戻すことが可能（backward compatible）
-   - `04d_judge_only.py`: `--judge-model` で採点モデルを明示指定可能
+3. **Enhanced Scripts**
+   - `03_rag_retrievers.py`: HippoRAG2Retriever now equipped with keyword functionality
+     - `use_keywords=True` enables new feature (default)
+     - `use_keywords=False` allows rollback to previous behavior (backward compatible)
+   - `04d_judge_only.py`: `--judge-model` option for explicit model specification
 
-**評価結果（類似度ベース、200質問）:**
+**Evaluation Results (Similarity-based, 200 questions):**
 
-![類似度スコア：6条件比較](experiments/evals/figures/01_similarity_comparison.png)
+![Cosine Similarity Scores: 6 Conditions Comparison](experiments/evals/figures/01_similarity_comparison.png)
 
-![類似度スコア分布：Violin Plot](experiments/evals/figures/02_similarity_violin.png)
+![Cosine Similarity Distribution: Violin Plot](experiments/evals/figures/02_similarity_violin.png)
 
-![類似度分布内訳：スタックバー](experiments/evals/figures/03_similarity_distribution.png)
+![Similarity Score Distribution: Stacked Bar](experiments/evals/figures/03_similarity_distribution.png)
 
-**v0.2.1の特徴:**
-- ✅ ボリューム分類精度が向上（embedding単独から融合アプローチへ）
-- ✅ キーワード辞書管理で保守性向上
-- ✅ backward compatible（従来動作に戻すことが可能）
-- ✅ Judge不要の高速評価方法（Cosine類似度）を新規追加
-- ✅ 可視化ツールで6条件の比較が容易
+**v0.2.1 Features:**
+- ✅ Improved volume classification accuracy (embedding-only → fusion approach)
+- ✅ Enhanced maintainability through centralized keyword dictionary management
+- ✅ Backward compatible (can revert to previous behavior)
+- ✅ Added fast evaluation method without Judge (Cosine similarity)
+- ✅ Easy multi-condition comparison with visualization tools
 
 ---
 
