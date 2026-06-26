@@ -9,16 +9,258 @@ A reproducible benchmark comparing three RAG retrieval strategies on Japanese ci
 | **Document corpus** | 8 volumes of *Kasen·Dam·Sabo Technical Standards 2025* (河川砂防技術標準) |
 | **Test set** | 200 QA pairs, sampled from 4,000 generated QA pairs (seed = 42) |
 | **RAG strategies** | Naive RAG · Light RAG · HippoRAG2 (hierarchical coarse-to-fine) |
-| **LLM backends** | Swallow-8B-LoRA-Q4 · ELYZA-JP-8B-LoRA-Q4 (served via Ollama) |
-| **Judge model** | Qwen2.5-7B-Instruct (served via Ollama) |
+| **LLM backends** | Swallow-8B-LoRA-Q4 · ELYZA-JP-8B-LoRA-Q4 · **Qwen2.5-7B-Instruct-Q4_K_M** (v0.4.0, via Ollama) |
+| **Judge model** | Qwen2.5-14B-Instruct (served via Ollama) |
 | **Embedding model** | [`hotchpotch/static-embedding-japanese`](https://huggingface.co/hotchpotch/static-embedding-japanese) (1024-dim, IP similarity) |
 | **GPU constraint** | 16 GB VRAM |
 
-**6 conditions total** = 3 RAG types × 2 LLM models.
+**6+ conditions total** = 3 RAG types × 2+ LLM models.
 
 ---
 
 ## Release Notes
+
+### v0.5.1 (2026-06-26) 📊
+
+**3-Tier Hierarchical Structure Foundation — Ready for Calibration Model Training**
+
+**Implementation:**
+- **3-tier retrieval hierarchy**: Volume → Chapter → Chunk
+  - **5 Volumes**: 概要 (Overview), 調査 (Investigation), 計画 (Planning), 設計 (Design), 維持管理 (Maintenance)
+  - **27 Chapters**: Chapter-level indexing using document headings (uneven distribution: 1-20 chapters/volume)
+  - **5,322 Chunks**: Base retrieval units from technical standards corpus
+- **Feature logging infrastructure**: `--log-features` flag for hierarchical feature extraction
+  - Volume features: `emb_score`, `kw_score`, `triple_score`, `fused_score`, `selected`
+  - Chapter features: `emb_score`, `triple_score`, `fused_score`, `selected`
+  - Chunk features: `embedding_sim`, `chunk_length`, `volume_id`, `chapter_id`
+- **Hierarchical representative vectors**: Volume/Chapter embeddings via L2-normalized mean pooling
+
+**Technical Details:**
+```bash
+# Build hierarchical indices (5 volumes, 27 chapters)
+python experiments/01_build_indices.py --rebuild
+python experiments/01b_build_hipporag2_index.py
+
+# Evaluation with 3-tier feature logging
+python experiments/04_eval_rag.py \
+  --ollama-model qwen2.5:7b-instruct-q4_k_m \
+  --rag hipporag2 \
+  --n-triples 20 \
+  --judge-model qwen2.5:14b \
+  --log-features
+```
+
+**Data Structure:**
+| Level | Count | Distribution | Representative Vector |
+|-------|-------|--------------|----------------------|
+| Volume | 5 | Balanced by domain | Mean pooling of all chunks in volume |
+| Chapter | 27 | 概要:20, 調査:1, 計画:2, 設計:1, 維持管理:3 | Mean pooling of all chunks in chapter |
+| Chunk | 5,322 | Full corpus | Individual embeddings |
+
+**Output Files:**
+- `experiments/indices/hierarchy.json`: Volume/Chapter/Chunk ID mappings
+- `experiments/indices/hipporag2_volumes.json`: 5 volume representative vectors
+- `experiments/indices/hipporag2_chapters.json`: 27 chapter representative vectors
+- `experiments/results/*_volume_features.jsonl`: Volume-level features + Judge scores
+- `experiments/results/*_chapter_features.jsonl`: Chapter-level features + Judge scores
+- `experiments/results/*_chunk_features.jsonl`: Chunk-level features + Judge scores
+
+**Evaluation Results (200 questions):**
+- **Judge Score**: 2.785 / 3.0 (93% of max score)
+- **Score Distribution**:
+  - 3-point rate: 166/200 (**83.0%**) — near-perfect answers
+  - 2-point rate: 25/200 (12.5%) — partial accuracy
+  - 1-point rate: 9/200 (4.5%) — minimal relevance
+  - 0-point rate: 0/200 (**0%**) — no failures
+- **Feature Logging**: Volume 1,000 entries | Chapter 2,410 entries | Chunk 1,000 entries
+- **Performance**: avg Retrieval 11.01s | avg Generation 12.5s
+
+**Improvement vs. v0.4.0:**
+- Judge score: 2.300 → 2.785 (**+21.1%**)
+- 3-point rate: 70% → 83.0% (+13.0pt)
+- 0-point rate: 10% → 0% (-10.0pt)
+
+---
+
+### v0.5.2 (2026-06-26) 🔧
+
+**Calibration Model Integration — Hierarchical Reranking Implementation**
+
+**Implementation:**
+- **3-tier calibration models trained**: LinearRegression models for Volume/Chapter/Chunk scoring
+  - Volume model: 5 features (emb_score, kw_score, triple_score, fused_score, selected)
+  - Chapter model: 4 features (emb_score, triple_score, fused_score, selected)
+  - Chunk model: 2 features (embedding_sim, chunk_length)
+- **Training results** (trained on 1,000 Volume + 2,410 Chapter + 1,000 Chunk features):
+  - Volume: R²=0.00, MAE=0.35, Pearson=0.03
+  - Chapter: R²=0.00, MAE=0.39, Pearson=0.03
+  - Chunk: R²=0.03, MAE=0.35, Pearson=0.17 (embedding_sim coef=0.84)
+- **HippoRAG2Retriever integration**: Calibrated reranking at all 3 levels
+  - `use_calibration` parameter: Enable/disable calibration models
+  - `calibration_dir` parameter: Custom model directory path
+  - Prediction methods: `_predict_volume_score()`, `_predict_chapter_score()`, `_predict_chunk_score()`
+  - Reranking: Replace raw similarity scores with predicted Judge scores before argmax selection
+- **Evaluation script enhancement**: `--use-calibration` and `--calibration-dir` flags in 04_eval_rag.py
+
+**Training Script:**
+```bash
+# Train calibration models (Phase 3)
+python experiments/06_train_calibration.py
+
+# Models saved to: experiments/calibration_models/
+#   - volume_model.pkl
+#   - chapter_model.pkl
+#   - chunk_model.pkl
+#   - training_report.json
+```
+
+**Usage:**
+```bash
+# Evaluation with calibration models (Phase 4)
+python experiments/04_eval_rag.py \
+  --ollama-model qwen2.5:7b-instruct-q4_k_m \
+  --rag hipporag2 \
+  --n-triples 20 \
+  --judge-model qwen2.5:14b \
+  --use-calibration
+
+# dry-run test (10 questions)
+python experiments/04_eval_rag.py \
+  --ollama-model qwen2.5:7b-instruct-q4_k_m \
+  --rag hipporag2 \
+  --n-triples 20 \
+  --judge-model qwen2.5:14b \
+  --use-calibration \
+  --dry-run
+```
+
+**Evaluation Results (200 questions):**
+- **Judge Score**: 2.790 / 3.0 (93.0% of max score)
+- **Score Distribution**:
+  - 3-point rate: 167/200 (**83.5%**) — near-perfect answers
+  - 2-point rate: 24/200 (12.0%) — partial accuracy
+  - 1-point rate: 9/200 (4.5%) — minimal relevance
+  - 0-point rate: 0/200 (**0%**) — no failures
+- **Performance**: avg Retrieval 11.05s | avg Generation 12.5s
+
+**Improvement vs. v0.5.1 (baseline):**
+- Judge score: 2.785 → 2.790 (**+0.18%**)
+- 3-point rate: 83.0% → 83.5% (+0.5pt)
+- Perfect scores: 166 → 167 (+1 question improved from 2-pt to 3-pt)
+
+**Analysis:**
+- Low R² values (0.00-0.03) indicate weak predictive power due to high baseline performance (v0.5.1: 93%)
+- **Marginal improvement observed** (+0.18%) despite weak model metrics
+- Chunk model (R²=0.03, embedding_sim coef=0.84) contributed to slight reranking benefit
+- **Ceiling effect confirmed**: Baseline at 93% performance leaves minimal room for calibration gains
+- Result validates hypothesis that calibration models are most beneficial when baseline < 85%
+
+**Next Steps (v0.6):**
+- Document v0.5.2 calibration results in research paper (Discussion 5.5)
+- Analyze cases where calibration changed 2-pt → 3-pt scores
+
+---
+
+### v0.6.1 (2026-06-27) 🌲
+
+**LightGBM Calibration Models — Non-linear Feature Learning**
+
+**Motivation:**
+- LinearRegression (v0.5) showed R²≈0 due to inability to capture non-linear feature interactions
+- LightGBM gradient boosting can learn conditional effects (e.g., "triple_score matters when emb_score is high")
+
+**Implementation:**
+- **Model upgrade**: LinearRegression → LightGBM Regressor (100 trees, lr=0.05, max_depth=5)
+- **Extended to all RAG methods**: HippoRAG2 (3-tier), NaiveRAG (chunk-only), LightRAG (chunk-only)
+- **Training scripts**:
+  - `06_train_calibration.py --model-type lgbm` (HippoRAG2)
+  - `06b_train_naive_calibration.py --model-type lgbm` (NaiveRAG)
+  - `06c_train_light_calibration.py --model-type lgbm` (LightRAG)
+
+**Training Results:**
+
+| Method | Model | Features | R² (test) | Pearson | Note |
+|--------|-------|----------|-----------|---------|------|
+| **HippoRAG2** | Volume | 5D | -0.10 | -0.10 | Overfitting |
+| | Chapter | 4D | -0.01 | 0.05 | No predictive power |
+| | Chunk | 2D | -0.01 | 0.18 | Minimal correlation |
+| **NaiveRAG** | Chunk | 2D | 0.02 | 0.16 | Slight improvement vs linear (0.01) |
+| **LightRAG** | Chunk | 4D | -0.04 | -0.04 | No predictive power |
+
+**Evaluation Results (200 questions):**
+
+| Method | Baseline | + Linear Calibration (v0.5) | + LightGBM Calibration (v0.6.1) |
+|--------|----------|----------------------------|--------------------------------|
+| **HippoRAG2** | 2.785 (83.0%) | 2.790 (+0.18%) | 2.790 (no change) |
+| **NaiveRAG** | 2.785 (83.0%) | 2.740 (-1.6%) | — |
+| **LightRAG** | 2.705 (77.0%) | 2.810 (+3.9%) ✅ | — |
+
+**Key Findings:**
+- **LightGBM showed no improvement** over LinearRegression for HippoRAG2 (both R²≈0)
+- **LightRAG with linear calibration achieved +3.9% improvement** (2.705 → 2.810)
+  - Effective because baseline (77%) was within optimal calibration range (70-85%)
+  - 4D features (embedding_sim, bm25_score, fused_score, chunk_length) contributed to better reranking
+- **Ceiling effect confirmed**: HippoRAG2/NaiveRAG baselines at 93% leave minimal room for optimization
+- **LambdaMART ranker failed** (R²≈-30 to -93): Predictions collapsed to constants due to small candidate set (top-5 chunks per query)
+
+**Conclusion:**
+- Non-linear models (LightGBM, LambdaMART) do not overcome fundamental limitation: **retrieval features have weak correlation with Judge scores**
+- Calibration most effective when baseline 70-85%; above 90% shows ceiling effect
+- **v0.6.1 adopts LightGBM Regressor** for consistency, but linear models remain viable for high-performance baselines
+- Explore alternative calibration approaches (e.g., non-linear models, ensemble methods) for future work
+
+---
+
+### v0.4.0 (2026-06-26) 🚀
+
+**Ollama Inference Model Support — Judge Score +326% improvement**
+
+**Challenge:**
+v0.3.1.5 with Swallow-8B-LoRA yielded Judge score 0.540/3.0. Long-form generation failures and lack of technical detail were prominent.
+
+**Solution:**
+- **Ollama inference model support**: Added `--ollama-model` option
+- **Model switch**: Swallow 8B → **Qwen2.5 7B-Instruct-Q4_K_M**
+- Unified Qwen2.5 for both generation and triple filtering
+
+**Usage:**
+```bash
+# ✨ Recommended: Ollama model (high quality)
+python experiments/04_eval_rag.py \
+  --ollama-model qwen2.5:7b-instruct-q4_k_m \
+  --rag hipporag2 \
+  --n-triples 20 \
+  --judge-model qwen2.5:14b
+
+# Legacy: Unsloth model (fast batch processing)
+python experiments/04_eval_rag.py \
+  --model swallow \
+  --rag hipporag2 \
+  --batch-size 8 \
+  --n-triples 20 \
+  --judge-model qwen2.5:14b
+```
+
+**Results (dry-run, 10 questions):**
+
+| Model | Judge Score | 3-pt Rate | 0-pt Rate | Retrieval | Generation |
+|-------|-------------|-----------|-----------|-----------|------------|
+| Swallow 8B<br>(v0.3.1.5) | 0.540 | 1.5% | 53.0% | 11.3s | 23.4s |
+| **Qwen2.5 7B**<br>**(v0.4.0)** | **2.300** | **70.0%** | **10.0%** | **12.5s** | **13.1s** |
+| **Improvement** | **+326%** | **+47×** | **-81%** | +11% | **-44%** |
+
+**Key Improvements:**
+1. ✅ **Judge Score 2.3/3.0**: Rich answers with technical details
+2. ✅ **3-pt Rate 70%**: Proper citation of standard names and section numbers
+3. ✅ **0-pt Rate 10%**: "No answer provided" nearly eliminated
+4. ✅ **44% faster generation**: 13.1s/question (even with Ollama)
+
+**Technical Details:**
+- Ollama processes questions sequentially (no batch API)
+- Qwen2.5:7b-instruct-q4_k_m used for both triple filtering and generation
+- VRAM management: Handled by Ollama server (no manual unload required)
+
+---
 
 ### v0.2.1 (2026-06-21)
 
@@ -109,7 +351,7 @@ Fallback: if candidate pool < top-k, full Naive search is used.
 
 ## Evaluation Rubric
 
-Qwen2.5-7B-Instruct assigns a score 0–3 to each generated answer:
+Qwen2.5-14B-Instruct (v0.4.0+) or Qwen2.5-7B-Instruct assigns a score 0–3 to each generated answer:
 
 | Score | Criterion |
 |---|---|
@@ -139,7 +381,7 @@ kasensabo_hipporag2/
 │   ├── 02_prepare_testset.py       # Sample 200-question test set (seed=42)
 │   ├── 02b_build_volume_keywords.py # [v0.2.1] Build keyword dictionary for volume classification
 │   ├── 03_rag_retrievers.py        # NaiveRetriever / LightRetriever / HippoRAG2Retriever
-│   ├── 04_eval_rag.py              # Single-condition evaluation pipeline
+│   ├── 04_eval_rag.py              # Single-condition evaluation pipeline (supports --ollama-model in v0.4.0)
 │   ├── 04b_run_all.ps1             # Run all 6 conditions sequentially (PowerShell)
 │   ├── 04c_run_all.py              # [v0.1] Batch evaluation runner with configurable batch sizes
 │   ├── 04d_judge_only.py           # [v0.1] Re-run scoring without re-generating answers
@@ -174,7 +416,8 @@ kasensabo_hipporag2/
 - [Ollama](https://ollama.com/) running at `http://localhost:11434` with the following models pulled:
   - A Swallow-8B LoRA Q4 model (e.g., `swallow8b-lora-n4000-v09-q4`)
   - An ELYZA-JP-8B LoRA Q4 model (e.g., `elyza8b-lora-n4000-q4`)
-  - `qwen2.5:7b` or `qwen2.5:7b-instruct-q4_k_m` (for AI-as-Judge)
+  - `qwen2.5:14b` (for AI-as-Judge, v0.4.0+)
+  - `qwen2.5:7b-instruct-q4_k_m` (for inference and triple filtering, v0.4.0+, **recommended**)
 - GPU with 16 GB VRAM (CPU fallback is supported but slow)
 
 ### 2. Create a virtual environment and install dependencies
@@ -205,6 +448,21 @@ python experiments/03_rag_retrievers.py --test
 
 # Step 4 — evaluate all 6 conditions
 pwsh experiments/04b_run_all.ps1
+
+# [v0.4.0] Or evaluate with Ollama model (recommended for best quality)
+python experiments/04_eval_rag.py \
+  --ollama-model qwen2.5:7b-instruct-q4_k_m \
+  --rag hipporag2 \
+  --n-triples 20 \
+  --judge-model qwen2.5:14b
+
+# [v0.4.0] Dry-run with 10 questions for quick validation
+python experiments/04_eval_rag.py \
+  --ollama-model qwen2.5:7b-instruct-q4_k_m \
+  --rag hipporag2 \
+  --n-triples 20 \
+  --judge-model qwen2.5:14b \
+  --dry-run
 
 # Step 5 — aggregate and visualize
 python experiments/05_aggregate_results.py

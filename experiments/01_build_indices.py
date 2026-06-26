@@ -66,9 +66,12 @@ VOLUME_KEYWORDS: dict[str, list[str]] = {
 
 
 def extract_chapter(heading: str) -> str:
-    """見出しから章番号（第X章）を抽出する。見つからない場合は空文字。"""
-    m = re.search(r"第\s*\d+\s*章", heading or "")
-    return m.group(0).replace(" ", "") if m else ""
+    """
+    見出しを章名として使用（v0.5対応）
+    空の場合のみ空文字を返す（hierarchy構築時に__uncategorized__に振り分け）
+    """
+    heading = (heading or "").strip()
+    return heading if heading else ""
 
 
 # ─────────────────────────────────────────────────────────
@@ -86,7 +89,6 @@ def load_chunks() -> list[dict]:
                 c["chapter"] = extract_chapter(c.get("heading", ""))
                 chunks.append(c)
     return chunks
-
 
 # ─────────────────────────────────────────────────────────
 # 埋め込み計算

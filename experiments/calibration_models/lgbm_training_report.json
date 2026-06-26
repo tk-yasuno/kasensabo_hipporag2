@@ -1,0 +1,84 @@
+{
+  "volume": {
+    "model_type": "lgbm",
+    "train": {
+      "mae": 0.33144220275554404,
+      "rmse": 0.47869075160632946,
+      "r2": 0.1240640838171535,
+      "pearson": 0.38525045705370214,
+      "n_samples": 800
+    },
+    "test": {
+      "mae": 0.35737484265776454,
+      "rmse": 0.520061951541023,
+      "r2": -0.09510854718355022,
+      "pearson": -0.10026485166732797,
+      "n_samples": 200
+    },
+    "feature_importance": [
+      245,
+      0,
+      0,
+      745,
+      10
+    ],
+    "n_estimators": 100,
+    "learning_rate": 0.05
+  },
+  "chapter": {
+    "model_type": "lgbm",
+    "train": {
+      "mae": 0.36594943902757393,
+      "rmse": 0.5102925858187891,
+      "r2": 0.0707092705014567,
+      "pearson": 0.28291607125329526,
+      "n_samples": 1928
+    },
+    "test": {
+      "mae": 0.38450387701202576,
+      "rmse": 0.5428475964320153,
+      "r2": -0.010883019019035656,
+      "pearson": 0.051155734915433,
+      "n_samples": 482
+    },
+    "feature_importance": [
+      320,
+      0,
+      931,
+      71
+    ],
+    "n_estimators": 100,
+    "learning_rate": 0.05
+  },
+  "chunk": {
+    "model_type": "lgbm",
+    "train": {
+      "mae": 0.31560850543315266,
+      "rmse": 0.46571139510274406,
+      "r2": 0.17092085807131407,
+      "pearson": 0.4237226324965351,
+      "n_samples": 800
+    },
+    "test": {
+      "mae": 0.3387191564780986,
+      "rmse": 0.49957529800461553,
+      "r2": -0.010529318256505382,
+      "pearson": 0.18353645656677212,
+      "n_samples": 200
+    },
+    "feature_importance": [
+      1000,
+      111
+    ],
+    "n_estimators": 100,
+    "learning_rate": 0.05
+  },
+  "config": {
+    "model_type": "lgbm",
+    "test_split": 0.2,
+    "random_seed": 42,
+    "volume_features_path": "experiments/results/qwen257b_hipporag2_volume_features.jsonl",
+    "chapter_features_path": "experiments/results/qwen257b_hipporag2_chapter_features.jsonl",
+    "chunk_features_path": "experiments/results/qwen257b_hipporag2_chunk_features.jsonl"
+  }
+}

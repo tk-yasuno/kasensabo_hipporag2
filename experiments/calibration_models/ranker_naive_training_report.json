@@ -1,0 +1,30 @@
+{
+  "chunk": {
+    "model": "Chunk",
+    "model_type": "ranker",
+    "n_train": 800,
+    "n_test": 200,
+    "n_train_queries": 160,
+    "n_test_queries": 40,
+    "mae_train": 2.75625,
+    "mae_test": 2.9,
+    "rmse_train": 2.811805469800498,
+    "rmse_test": 2.9154759474226504,
+    "r2_train": -24.55878267458012,
+    "r2_test": -93.44444444444444,
+    "pearson_train": NaN,
+    "pearson_test": NaN,
+    "ndcg5_train": 1.0,
+    "ndcg10_train": 1.0,
+    "ndcg5_test": 1.0,
+    "ndcg10_test": 1.0,
+    "feature_importance": [
+      0,
+      0
+    ],
+    "n_estimators": 100
+  },
+  "config": {
+    "model_type": "ranker"
+  }
+}
