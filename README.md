@@ -20,6 +20,53 @@ A reproducible benchmark comparing three RAG retrieval strategies on Japanese ci
 
 ## Release Notes
 
+### v0.6.2 (2026-06-28) 📝
+
+**Paper Methodology Correction — LightRAG → CoLRAG with ColBERT Foundation**
+
+**Changes:**
+- **Paper renaming**: "LightRAG with Triple Filtering" → "CoLRAG with Triple Filtering"
+  - CoLRAG = **Co**ntextualized **L**ate Interaction **RAG**
+  - Aligned with ColBERT (Khattab & Zaharia, SIGIR 2020) hybrid retrieval paradigm
+- **Reference updates** (`kasensabo_rag_comparison_2026.bib`):
+  - ❌ Removed: `gao2024lightrag` (Tianyu Gao et al., arXiv:2406.11513) — incorrect citation
+  - ✅ Added: 4 foundational hybrid retrieval papers:
+    - `khattab2020colbert`: ColBERT (SIGIR 2020) — contextualized late interaction
+    - `formal2021splade`: SPLADE (NeurIPS 2021) — sparse lexical expansion
+    - `thakur2021beir`: BEIR Benchmark (2021) — heterogeneous retrieval evaluation
+    - `izacard2022contriever`: Contriever (NeurIPS 2022) — unsupervised dense retrieval
+- **Section 2.2 major revision**: 
+  - Old: Generic LightRAG description with incorrect citation
+  - New: CoLRAG as BM25+embedding fusion inspired by ColBERT
+  - Added comprehensive related work on hybrid retrieval (ColBERT, SPLADE, BEIR, Contriever)
+  - Theoretical foundation: "Hybrid retrieval combining BM25 and dense representations consistently improves performance"
+- **Implementation alignment**: Section 2.2 now matches `experiments/03_rag_retrievers.py::LightRetriever` class
+  - Score fusion: `α * s_emb + (1-α) * s_bm25`
+  - Default α=0.5 for balanced hybrid retrieval
+- **Global consistency**: 29 occurrences of "LightRAG" → "CoLRAG" across:
+  - Title, Abstract, Section headers
+  - Tables (baselines, error analysis, cross-RAG calibration)
+  - Figures, Discussion, Conclusion
+
+**Files Modified:**
+- `papers_kasensabo_hippo2/kasensabo_rag_comparison_2026/kasensabo_rag_comparison_2026.tex`
+- `papers_kasensabo_hippo2/kasensabo_rag_comparison_2026/kasensabo_rag_comparison_2026.bib`
+- `papers_kasensabo_hippo2/kasensabo_rag_comparison_2026/kasensabo_rag_comparison_2026.pdf` (608.99 KB)
+
+**Impact:**
+- ✅ Scientific accuracy: Paper now correctly positions work within ColBERT/hybrid retrieval lineage
+- ✅ No code changes: Implementation (`LightRetriever` class) remains unchanged
+- ✅ Backward compatibility: Experimental results and evaluation scripts unaffected
+
+**Compilation:**
+```bash
+cd papers_kasensabo_hippo2/kasensabo_rag_comparison_2026
+bibtex kasensabo_rag_comparison_2026
+pdflatex kasensabo_rag_comparison_2026.tex  # Run 3 times for cross-references
+```
+
+---
+
 ### v0.5.1 (2026-06-26) 📊
 
 **3-Tier Hierarchical Structure Foundation — Ready for Calibration Model Training**
