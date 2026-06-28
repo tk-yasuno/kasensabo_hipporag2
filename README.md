@@ -1,4 +1,4 @@
-# RAG Benchmark — Japanese River & Sediment-Control Technical Standards
+# CoLRAG with Triple Filtering for Domain-specific Technical Documents
 
 A reproducible benchmark comparing three RAG retrieval strategies on Japanese civil-engineering technical documents, evaluated by an AI-as-Judge scoring rubric.
 
