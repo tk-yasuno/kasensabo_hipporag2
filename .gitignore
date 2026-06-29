@@ -56,6 +56,9 @@ data/generated_QA/*.npz
 *.lof
 *.lot
 
+# ── Paper drafts ─────────────────────────────────────────────
+papers_kasensabo_hippo2/kasensabo_rag_comparison_2026/
+
 # ── OS / editor ──────────────────────────────────────────────
 .DS_Store
 Thumbs.db

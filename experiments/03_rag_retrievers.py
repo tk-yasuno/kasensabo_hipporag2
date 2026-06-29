@@ -8,7 +8,7 @@ Phase 3: 3方式 RAG 検索モジュール
 クラス:
   BaseRetriever       — 共通インターフェース
   NaiveRetriever      — embedding 類似度 → top-k
-  LightRetriever      — BM25 + embedding スコア融合 → top-k
+  CoLRAGRetriever      — BM25 + embedding スコア融合 → top-k
   HippoRAG2Retriever  — 巻→章→節チャンクの 3段階 coarse-to-fine
 
 Usage (単体テスト):
@@ -255,7 +255,7 @@ class NaiveRetriever(BaseRetriever):
 
 
 # ─────────────────────────────────────────────────────────
-# LightRetriever — BM25 + embedding スコア融合
+# CoLRAGRetriever — BM25 + embedding スコア融合
 # ─────────────────────────────────────────────────────────
 
 class LightRetriever(BaseRetriever):

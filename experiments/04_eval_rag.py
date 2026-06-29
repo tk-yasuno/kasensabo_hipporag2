@@ -552,6 +552,7 @@ def main():
     parser.add_argument("--log-features", action="store_true",  help="[v0.5] Volume/Chapter/Chunk featuresをログ出力（calibration用）")
     parser.add_argument("--use-calibration", action="store_true", help="[v0.5] キャリブレーションモデルを使用してリランキング")
     parser.add_argument("--calibration-dir", type=str, default=None, help="[v0.5] キャリブレーションモデルディレクトリ（デフォルト: experiments/calibration_models）")
+    parser.add_argument("--test-file", type=str, default=None, help="テストセットファイル（デフォルト: experiments/testset_200.jsonl）")
     args = parser.parse_args()
     
     # --ollama-model指定時は--modelを不要にする
@@ -596,16 +597,18 @@ def main():
         sys.exit(1)
 
     # ── テストセットロード ──
-    if not TEST_FILE.exists():
-        print(f"ERROR: テストセットが見つかりません: {TEST_FILE}")
+    test_file = Path(args.test_file) if args.test_file else TEST_FILE
+    if not test_file.exists():
+        print(f"ERROR: テストセットが見つかりません: {test_file}")
         print("  先に 02_prepare_testset.py を実行してください。")
         sys.exit(1)
 
-    records = load_testset(TEST_FILE)
+    records = load_testset(test_file)
     if args.dry_run:
         records = records[:10]
         print(f"  [dry-run] 10件のみ実行")
     print(f"  テスト件数: {len(records)} 問")
+    print(f"  テストファイル: {test_file.name}")
 
     # ── RAG Retriever 初期化 ──
     sys.path.insert(0, str(EXP_DIR))
